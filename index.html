@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Shop Store</title>
+  <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+  <style>
+    :root {
+      --background: #1a5c85;
+      --foreground: #ffffff;
+      --card: #e8f4f8;
+      --card-foreground: #333333;
+      --primary: #4caf50;
+      --primary-foreground: #ffffff;
+      --secondary: #2c4a63;
+      --secondary-foreground: #ffffff;
+      --accent: #9c27b0;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 20px;
+      --font-family-body: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-family-body);
+      background-color: #111;
+      color: var(--foreground);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .phone-frame {
+      width: 390px;
+      max-height: 844px;
+      height: 100vh;
+      background-color: var(--background);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      background-image: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.1) 1px, transparent 1px),
+                         radial-gradient(circle at 90% 80%, rgba(255,255,255,0.1) 1px, transparent 1px);
+      background-size: 40px 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 60px rgba(0,0,0,0.5);
+    }
+
+    @media (max-width: 420px) {
+      .phone-frame {
+        width: 100%;
+        height: 100vh;
+        max-height: none;
+        border-radius: 0;
+      }
+    }
+
+    .flex-row { display: flex; flex-direction: row; align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .gap-4 { gap: 4px; }
+    .gap-8 { gap: 8px; }
+    .text-shadow { text-shadow: 0px 2px 0px rgba(0,0,0,0.3); }
+
+    /* ===== TOP BAR ===== */
+    .top-bar {
+      padding: 8px 12px;
+      background: linear-gradient(180deg, #3a8db5 0%, #2a6f91 100%);
+      border-bottom: 2px solid #1e526e;
+      position: relative;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .resource-badge {
+      background: rgba(0,0,0,0.4);
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: transform 0.2s;
+    }
+
+    .resource-badge:hover { transform: scale(1.05); }
+
+    .resource-icon {
+      width: 20px; height: 20px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .close-btn {
+      background: #d32f2f;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .close-btn:hover { transform: scale(1.1); background: #b71c1c; }
+
+    .add-btn {
+      background: #4caf50;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin-left: -4px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      border: none;
+    }
+    .add-btn:hover { transform: scale(1.2); }
+
+    /* ===== BANNER ===== */
+    .banner-area {
+      background: linear-gradient(180deg, #5fb3db 0%, #1a5c85 100%);
+      padding: 12px 0 20px 0;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .shop-title {
+      font-size: 28px;
+      font-weight: 900;
+      text-transform: capitalize;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .mascot-left {
+      position: absolute;
+      left: -10px; bottom: 0;
+      height: 80px;
+      z-index: 1;
+    }
+
+    .tabs-container {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 16px;
+      position: relative;
+      z-index: 5;
+    }
+
+    .tab-pill {
+      background: rgba(0,0,0,0.5);
+      color: #ccc;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.3s;
+      user-select: none;
+    }
+
+    .tab-pill:hover { background: rgba(0,0,0,0.7); }
+
+    .tab-pill.active {
+      background: #e1f5fe;
+      color: #0d47a1;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* ===== CONTENT ===== */
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      text-transform: capitalize;
+      letter-spacing: 0.5px;
+    }
+
+    .section-line {
+      height: 2px;
+      background: rgba(255,255,255,0.3);
+      flex: 1;
+      border-radius: 2px;
+    }
+
+    .help-icon {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: #e0e0e0;
+      color: #555;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .help-icon:hover { transform: scale(1.1); }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 0 12px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
+      border-radius: 12px;
+      padding: 8px 4px 12px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+      color: #333;
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+    .card:hover { transform: translateY(-4px); }
+    .card:active { transform: translateY(0); box-shadow: 0 1px 0 rgba(0,0,0,0.2); }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      color: #333;
+      text-align: center;
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-img-container {
+      width: 60px; height: 70px;
+      margin: 4px 0;
+      display: flex; justify-content: center;
+    }
+
+    .card-img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3));
+    }
+
+    .card-badges {
+      display: flex;
+      gap: 4px;
+      width: 100%;
+      justify-content: space-between;
+      padding: 0 4px;
+      margin-top: -10px;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .badge-yellow {
+      background: #ffc107;
+      border: 1px solid #fff;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 4px;
+      color: #5d4037;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+    }
+
+    .stars { color: #ff9800; font-size: 10px; display: flex; gap: 1px; }
+
+    .price-btn {
+      background: var(--primary);
+      color: white;
+      width: 100%;
+      border-radius: 6px;
+      padding: 6px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-weight: 800;
+      font-size: 14px;
+      border: none;
+      border-bottom: 4px solid #388e3c;
+      cursor: pointer;
+      transition: filter 0.2s;
+    }
+    .price-btn:hover { filter: brightness(1.1); }
+    .price-btn:active { border-bottom-width: 1px; transform: translateY(3px); }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      animation: fadeIn 0.2s ease;
+    }
+    .modal-overlay.show { display: flex; }
+
+    .modal {
+      background: linear-gradient(180deg, #ffffff 0%, #e8f0f5 100%);
+      border-radius: 16px;
+      padding: 24px;
+      width: 85%;
+      max-width: 320px;
+      text-align: center;
+      color: #333;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      animation: popIn 0.3s ease;
+    }
+
+    @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    .modal h3 { font-size: 20px; margin-bottom: 8px; }
+    .modal p { font-size: 14px; color: #666; margin-bottom: 16px; }
+    .modal-img { width: 80px; height: 80px; margin: 0 auto 12px; }
+
+    .modal-actions { display: flex; gap: 8px; justify-content: center; }
+
+    .btn-confirm {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-bottom: 4px solid #388e3c;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .btn-confirm:active { border-bottom-width: 1px; transform: translateY(3px); }
+
+    .btn-cancel {
+      background: #e0e0e0;
+      color: #333;
+      border: none;
+      border-bottom: 4px solid #bbb;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .btn-cancel:active { border-bottom-width: 1px; transform: translateY(3px); }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: absolute;
+      top: 60px; left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: #4caf50;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      z-index: 200;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.4s ease;
+      pointer-events: none;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ===== OFFERS TAB ===== */
+    .offer-card {
+      background: linear-gradient(135deg, #ff6b35, #ff3d00);
+      border-radius: 12px;
+      padding: 16px;
+      margin: 0 12px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .offer-card:hover { transform: translateY(-2px); }
+    .offer-card:nth-child(2) { background: linear-gradient(135deg, #7c4dff, #651fff); }
+    .offer-card:nth-child(3) { background: linear-gradient(135deg, #00bcd4, #0097a7); }
+
+    .offer-info { flex: 1; }
+    .offer-info h3 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+    .offer-info p { font-size: 12px; opacity: 0.8; }
+    .offer-price {
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-weight: 800;
+      font-size: 14px;
+      text-align: center;
+    }
+    .offer-price .old { text-decoration: line-through; opacity: 0.6; font-size: 11px; display: block; }
+
+    /* ===== YAHTZEE TAB ===== */
+    .yahtzee-item {
+      background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin: 0 12px 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #333;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .yahtzee-item:hover { transform: translateY(-2px); }
+    .yahtzee-icon { font-size: 32px; }
+    .yahtzee-info { flex: 1; }
+    .yahtzee-info h3 { font-size: 14px; font-weight: 800; margin-bottom: 2px; }
+    .yahtzee-info p { font-size: 11px; color: #888; }
+
+    /* ===== FOOTER ===== */
+    .footer-area {
+      padding: 12px 16px;
+      background: rgba(0,0,0,0.1);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      flex-shrink: 0;
+    }
+
+    .collect-banner {
+      background: #e3f2fd;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+
+    .collect-icon {
+      padding: 0 16px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+
+    .notification-dot {
+      position: absolute;
+      bottom: -4px; right: 8px;
+      background: red;
+      color: white;
+      font-size: 10px;
+      font-weight: bold;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid white;
+    }
+
+    .collect-btn {
+      background: #ab47bc;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: 1px;
+      border: none;
+      border-bottom: 4px solid #7b1fa2;
+      cursor: pointer;
+      transition: filter 0.2s;
+    }
+    .collect-btn:hover { filter: brightness(1.1); }
+    .collect-btn:active { border-bottom-width: 1px; transform: translateY(3px); }
+  </style>
+</head>
+<body>
+
+<div class="phone-frame">
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Header -->
+  <header class="top-bar flex-row justify-between">
+    <div class="flex-row gap-8">
+      <div class="resource-badge">
+        <div class="resource-icon">
+          <iconify-icon icon="lucide:zap" style="font-size:18px; color:#ffeb3b; filter:drop-shadow(0 0 2px orange);"></iconify-icon>
+        </div>
+        <span class="text-shadow" id="energy">2250/300</span>
+      </div>
+      <div class="resource-badge">
+        <div class="resource-icon">
+          <iconify-icon icon="lucide:dices" style="font-size:18px; color:white;"></iconify-icon>
+        </div>
+        <span class="text-shadow" id="dice-count">342</span>
+        <button class="add-btn" onclick="addDice()">
+          <iconify-icon icon="lucide:plus" style="font-size:12px; color:white;"></iconify-icon>
+        </button>
+      </div>
+    </div>
+    <div class="close-btn" onclick="showToast('Cerrando tienda...')">
+      <iconify-icon icon="lucide:x" style="font-size:24px; color:white;"></iconify-icon>
+    </div>
+  </header>
+
+  <!-- Banner -->
+  <div class="banner-area">
+    <img src="https://img.freepik.com/free-vector/cute-dice-character_1308-134015.jpg?semt=ais_hybrid" class="mascot-left" alt="Mascot" style="mix-blend-mode:multiply;">
+    <h1 class="shop-title text-shadow">Tienda</h1>
+    <div class="tabs-container">
+      <div class="tab-pill" data-tab="ofertas" onclick="switchTab('ofertas')">
+        <iconify-icon icon="lucide:tag" style="font-size:14px;"></iconify-icon>
+        Ofertas
+      </div>
+      <div class="tab-pill active" data-tab="pegatinas" onclick="switchTab('pegatinas')">
+        <iconify-icon icon="lucide:sticky-note" style="font-size:14px;"></iconify-icon>
+        Pegatinas
+      </div>
+      <div class="tab-pill" data-tab="yahtzee" onclick="switchTab('yahtzee')">
+        <iconify-icon icon="lucide:gamepad-2" style="font-size:14px;"></iconify-icon>
+        Yahtzee+
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content-area">
+
+    <!-- TAB: Ofertas -->
+    <div class="tab-content" id="tab-ofertas">
+      <div class="section-header">
+        <div class="section-line"></div>
+        <h2 class="text-shadow">Ofertas Especiales</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="offer-card" onclick="openModal('Mega Pack', 199, 'pack')">
+        <div style="font-size:36px;">🎁</div>
+        <div class="offer-info">
+          <h3>Mega Pack</h3>
+          <p>500 dados + 10 pegatinas exclusivas</p>
+        </div>
+        <div class="offer-price">
+          <span class="old">399</span>
+          199 <iconify-icon icon="lucide:dices" style="font-size:12px;"></iconify-icon>
+        </div>
+      </div>
+      <div class="offer-card" onclick="openModal('Pack Premium', 149, 'pack')">
+        <div style="font-size:36px;">💎</div>
+        <div class="offer-info">
+          <h3>Pack Premium</h3>
+          <p>250 dados + 5 pegatinas raras</p>
+        </div>
+        <div class="offer-price">
+          <span class="old">249</span>
+          149 <iconify-icon icon="lucide:dices" style="font-size:12px;"></iconify-icon>
+        </div>
+      </div>
+      <div class="offer-card" onclick="openModal('Pack Inicial', 49, 'pack')">
+        <div style="font-size:36px;">🌟</div>
+        <div class="offer-info">
+          <h3>Pack Inicial</h3>
+          <p>100 dados + 2 pegatinas</p>
+        </div>
+        <div class="offer-price">
+          <span class="old">79</span>
+          49 <iconify-icon icon="lucide:dices" style="font-size:12px;"></iconify-icon>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Pegatinas -->
+    <div class="tab-content active" id="tab-pegatinas">
+      <div class="section-header">
+        <div class="section-line"></div>
+        <h2 class="text-shadow">Pegatinas</h2>
+        <div class="help-icon" onclick="showToast('Compra sobres para coleccionar pegatinas')">?</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="cards-grid">
+        <!-- Card 1 -->
+        <div class="card" onclick="openModal('Mágico', 100, 'sticker')">
+          <div class="card-title">Mágico</div>
+          <div class="card-img-container">
+            <img src="https://cdn-icons-png.flaticon.com/512/5406/5406398.png" class="card-img" style="filter:hue-rotate(260deg);" alt="pack">
+          </div>
+          <div class="card-badges">
+            <div class="badge-yellow" style="transform:rotate(-5deg);">&#128196; 4</div>
+            <div style="font-size:9px; color:#9c27b0; font-weight:700; text-align:right;">
+              MIN 1<br><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            </div>
+          </div>
+          <button class="price-btn">
+            100 <iconify-icon icon="lucide:dices" style="font-size:14px;"></iconify-icon>
+          </button>
+        </div>
+        <!-- Card 2 -->
+        <div class="card" onclick="openModal('Diamante', 65, 'sticker')">
+          <div class="card-title">Diamante</div>
+          <div class="card-img-container">
+            <img src="https://cdn-icons-png.flaticon.com/512/5406/5406398.png" class="card-img" style="filter:hue-rotate(180deg);" alt="pack">
+          </div>
+          <div class="card-badges">
+            <div class="badge-yellow" style="transform:rotate(-5deg);">&#128196; 4</div>
+            <div style="font-size:9px; color:#0288d1; font-weight:700; text-align:right;">
+              MIN 1<br><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</span>
+            </div>
+          </div>
+          <button class="price-btn">
+            65 <iconify-icon icon="lucide:dices" style="font-size:14px;"></iconify-icon>
+          </button>
+        </div>
+        <!-- Card 3 -->
+        <div class="card" onclick="openModal('Oro', 30, 'sticker')">
+          <div class="card-title">Oro</div>
+          <div class="card-img-container">
+            <img src="https://cdn-icons-png.flaticon.com/512/5406/5406398.png" class="card-img" style="filter:hue-rotate(40deg);" alt="pack">
+          </div>
+          <div class="card-badges">
+            <div class="badge-yellow" style="transform:rotate(-5deg);">&#128196; 4</div>
+            <div style="font-size:9px; color:#fbc02d; font-weight:700; text-align:right;">
+              MIN 1<br><span class="stars">&#9733;&#9733;&#9733;&#9734;&#9734;</span>
+            </div>
+          </div>
+          <button class="price-btn">
+            30 <iconify-icon icon="lucide:dices" style="font-size:14px;"></iconify-icon>
+          </button>
+        </div>
+        <!-- Card 4 -->
+        <div class="card" onclick="openModal('Plata', 15, 'sticker')">
+          <div class="card-title">Plata</div>
+          <div class="card-img-container">
+            <img src="https://cdn-icons-png.flaticon.com/512/5406/5406398.png" class="card-img" style="filter:hue-rotate(0deg) saturate(0.3);" alt="pack">
+          </div>
+          <div class="card-badges">
+            <div class="badge-yellow" style="transform:rotate(-5deg);">&#128196; 4</div>
+            <div style="font-size:9px; color:#9e9e9e; font-weight:700; text-align:right;">
+              MIN 1<br><span class="stars">&#9733;&#9733;&#9734;&#9734;&#9734;</span>
+            </div>
+          </div>
+          <button class="price-btn">
+            15 <iconify-icon icon="lucide:dices" style="font-size:14px;"></iconify-icon>
+          </button>
+        </div>
+        <!-- Card 5 -->
+        <div class="card" onclick="openModal('Bronce', 6, 'sticker')">
+          <div class="card-title">Bronce</div>
+          <div class="card-img-container">
+            <img src="https://cdn-icons-png.flaticon.com/512/5406/5406398.png" class="card-img" style="filter:hue-rotate(20deg) saturate(0.6);" alt="pack">
+          </div>
+          <div class="card-badges">
+            <div class="badge-yellow" style="transform:rotate(-5deg);">&#128196; 4</div>
+            <div style="font-size:9px; color:#8d6e63; font-weight:700; text-align:right;">
+              MIN 1<br><span class="stars">&#9733;&#9734;&#9734;&#9734;&#9734;</span>
+            </div>
+          </div>
+          <button class="price-btn">
+            6 <iconify-icon icon="lucide:dices" style="font-size:14px;"></iconify-icon>
+          </button>
+        </div>
+        <!-- Card 6 -->
+        <div class="card" onclick="openModal('Basico', 2, 'sticker')">
+          <div class="card-title">Basico</div>
+          <div class="card-img-container">
+            <img src="https://cdn-icons-png.flaticon.com/512/5406/5406398.png" class="card-img" style="filter:grayscale(0.8);" alt="pack">
+          </div>
+          <div class="card-badges">
+            <div class="badge-yellow" style="transform:rotate(-5deg);">&#128196; 2</div>
+            <div style="font-size:9px; color:#999; font-weight:700; text-align:right;">
+              MIN 0<br><span class="stars">&#9734;&#9734;&#9734;&#9734;&#9734;</span>
+            </div>
+          </div>
+          <button class="price-btn">
+            2 <iconify-icon icon="lucide:dices" style="font-size:14px;"></iconify-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Yahtzee+ -->
+    <div class="tab-content" id="tab-yahtzee">
+      <div class="section-header">
+        <div class="section-line"></div>
+        <h2 class="text-shadow">Yahtzee+</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="yahtzee-item" onclick="openModal('Dado Dorado', 50, 'item')">
+        <div class="yahtzee-icon">&#127922;</div>
+        <div class="yahtzee-info">
+          <h3>Dado Dorado</h3>
+          <p>+2 al resultado de cada tirada</p>
+        </div>
+        <button class="price-btn" style="width:auto; padding:6px 12px;">50 <iconify-icon icon="lucide:dices" style="font-size:12px;"></iconify-icon></button>
+      </div>
+      <div class="yahtzee-item" onclick="openModal('Re-tirada x3', 30, 'item')">
+        <div class="yahtzee-icon">&#128260;</div>
+        <div class="yahtzee-info">
+          <h3>Re-tirada x3</h3>
+          <p>3 oportunidades extra de tirar</p>
+        </div>
+        <button class="price-btn" style="width:auto; padding:6px 12px;">30 <iconify-icon icon="lucide:dices" style="font-size:12px;"></iconify-icon></button>
+      </div>
+      <div class="yahtzee-item" onclick="openModal('Comodin', 80, 'item')">
+        <div class="yahtzee-icon">&#127183;</div>
+        <div class="yahtzee-info">
+          <h3>Comodin</h3>
+          <p>Convierte cualquier dado en el valor que quieras</p>
+        </div>
+        <button class="price-btn" style="width:auto; padding:6px 12px;">80 <iconify-icon icon="lucide:dices" style="font-size:12px;"></iconify-icon></button>
+      </div>
+      <div class="yahtzee-item" onclick="openModal('Turno Extra', 20, 'item')">
+        <div class="yahtzee-icon">&#9203;</div>
+        <div class="yahtzee-info">
+          <h3>Turno Extra</h3>
+          <p>Un turno adicional en la partida</p>
+        </div>
+        <button class="price-btn" style="width:auto; padding:6px 12px;">20 <iconify-icon icon="lucide:dices" style="font-size:12px;"></iconify-icon></button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-area">
+    <div class="collect-banner">
+      <div class="collect-icon">
+        <iconify-icon icon="lucide:tv" style="font-size:32px; color:#333;"></iconify-icon>
+        <div class="notification-dot" id="notif-dot">1</div>
+      </div>
+      <button class="collect-btn" onclick="collectReward()">RECOGER</button>
+    </div>
+  </div>
+
+  <!-- Purchase Modal -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <div class="modal-img" id="modal-img" style="font-size:64px;"></div>
+      <h3 id="modal-title"></h3>
+      <p id="modal-desc"></p>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+        <button class="btn-confirm" id="modal-buy" onclick="confirmPurchase()">Comprar</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // State
+  let diceCount = 342;
+  let pendingRewards = 1;
+  let currentPurchase = { name: '', price: 0 };
+
+  // DOM refs
+  const diceEl = document.getElementById('dice-count');
+  const toastEl = document.getElementById('toast');
+  const modalEl = document.getElementById('modal');
+  const notifEl = document.getElementById('notif-dot');
+
+  // Tab switching
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-pill').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+    document.getElementById(`tab-${tab}`).classList.add('active');
+  }
+
+  // Toast
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(() => toastEl.classList.remove('show'), 2000);
+  }
+
+  // Add dice
+  function addDice() {
+    diceCount += 50;
+    diceEl.textContent = diceCount;
+    showToast('+50 dados obtenidos!');
+  }
+
+  // Modal
+  function openModal(name, price, type) {
+    currentPurchase = { name, price };
+    document.getElementById('modal-title').textContent = name;
+    document.getElementById('modal-desc').textContent = `Comprar por ${price} dados`;
+
+    const icons = { sticker: '&#127912;', pack: '&#127873;', item: '&#127922;' };
+    document.getElementById('modal-img').innerHTML = icons[type] || '&#127873;';
+    document.getElementById('modal-buy').innerHTML = `${price} <iconify-icon icon="lucide:dices" style="font-size:12px;"></iconify-icon>`;
+    modalEl.classList.add('show');
+  }
+
+  function closeModal() {
+    modalEl.classList.remove('show');
+  }
+
+  function confirmPurchase() {
+    if (diceCount >= currentPurchase.price) {
+      diceCount -= currentPurchase.price;
+      diceEl.textContent = diceCount;
+      closeModal();
+      showToast(`${currentPurchase.name} comprado!`);
+    } else {
+      closeModal();
+      showToast('No tienes suficientes dados!');
+    }
+  }
+
+  // Collect reward
+  function collectReward() {
+    if (pendingRewards > 0) {
+      pendingRewards--;
+      diceCount += 25;
+      diceEl.textContent = diceCount;
+      if (pendingRewards === 0) {
+        notifEl.style.display = 'none';
+      } else {
+        notifEl.textContent = pendingRewards;
+      }
+      showToast('+25 dados de recompensa!');
+    } else {
+      showToast('No hay recompensas pendientes');
+    }
+  }
+
+  // Click outside modal to close
+  modalEl.addEventListener('click', (e) => {
+    if (e.target === modalEl) closeModal();
+  });
+</script>
+
+</body>
+</html>
