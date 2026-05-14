@@ -1,0 +1,109 @@
+:root {
+  --bg: #1a5c85;
+  --fg: #ffffff;
+  --primary: #4caf50;
+  --secondary: #2c4a63;
+  --accent: #9c27b0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: #111;
+  color: var(--fg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.phone-frame {
+  width: 390px;
+  max-height: 844px;
+  height: 100vh;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.screen {
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.screen h1 { font-size: 20px; }
+.screen p { opacity: 0.85; font-size: 14px; }
+
+.btn {
+  background: var(--primary);
+  color: var(--fg);
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+.btn.secondary { background: var(--secondary); }
+.btn.accent { background: var(--accent); }
+
+/* HUD */
+.hud {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 12px;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
+  z-index: 10;
+}
+.hud a {
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.85;
+}
+.hud a.active { opacity: 1; font-weight: 700; }
+.hud .icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--secondary);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.hud .icon.play { background: var(--primary); }
+
+/* Saga map placeholders */
+.saga-map { position: relative; flex: 1; overflow: hidden; }
+.saga-decor {
+  position: absolute;
+  font-size: 22px;
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.85;
+}
+.saga-node {
+  position: absolute;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--fg);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.25);
+}
